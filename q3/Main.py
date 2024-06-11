@@ -25,6 +25,7 @@ img_elements = []
 
 
 i = 1
+# 매칭된 이미지 수가 사용자가 원하는 수가 아닐 시 페이지 이동해서 추가로 매칭
 while len(img_elements) < img_num :
     driver.get(f'https://pixabay.com/ko/images/search/{keyword}/?pagi={i}')
     driver.implicitly_wait(10)
@@ -34,13 +35,18 @@ while len(img_elements) < img_num :
     time.sleep(2)
 
 img_count = 1
+
 for img_element in img_elements[:img_num] :
     driver.implicitly_wait(10)
+    # 이미지를 담고 있는 div에서 img 태그 탐색
     img_tag = img_element.find_element(By.CSS_SELECTOR, 'a > img')
+    # 이미지 url 저장
     img_url = img_tag.get_attribute('src')
 
+    # 이미지 url이 있다면
     if img_url :
         response = requests.get(img_url)
+        # 파일로 저장
         with open(save_path + f"image_{img_count}.jpg", 'wb') as f :
             f.write(response.content)
     time.sleep(1)
