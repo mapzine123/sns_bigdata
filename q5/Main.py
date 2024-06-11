@@ -22,12 +22,16 @@ if save_path == "" :
 if not os.path.exists(save_path) :
     os.makedirs(save_path)
 
+# 사용자 입력값으로 검색
 driver.get(f"https://www.youtube.com/results?search_query={keyword}")
 driver.implicitly_wait(10)
+
+# 사용자가 원하는 수의 동영상이 나올 때 까지 스크롤
 while len(driver.find_elements(By.CSS_SELECTOR, ".style-scope.ytd-video-renderer > .text-wrapper.style-scope.ytd-video-renderer")) < youtube_num :
     time.sleep(2)
     driver.find_element(By.CSS_SELECTOR, "body").send_keys(Keys.END)
     
+# 사용자가 원한 수 만큼 동영상의 url 저장
 videos = driver.find_elements(By.CSS_SELECTOR, ".style-scope.ytd-video-renderer > #video-title")
 urls = [video.get_attribute("href") for video in videos[:youtube_num]]
 
@@ -62,7 +66,7 @@ for url in urls :
             if count == 1 :
                 file_content += "댓글 없음\n"
             break
-
+        # txt 파일로 저장
         file_content += f"2. 댓글 작성자명 : {author}\n"
         file_content += f"3. 댓글 작성일자 : {write_time}\n"
         file_content += f"4. 댓글 내용 : {comment} \n\n"
@@ -80,5 +84,7 @@ df = pd.DataFrame({
     '댓글작성일자': write_times,
     '댓글 내용': comments
 })
+# csv 파일로 저장
 df.to_csv(save_path + 'result.csv', encoding='utf-8')
+# excel 파일로 저장
 df.to_excel(save_path + 'result.xlsx')
